@@ -2,64 +2,57 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Main {
-    public static void main(String[] args){
-
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         List<Course> courses = new ArrayList<>();
 
-        System.out.println("GradeBit -- Model Prototype 1");
+        System.out.println("=== GradeBit Model Prototype 1 ===");
         System.out.print("How many courses are you taking: ");
         int numCourses = sc.nextInt();
-        sc.nextLine();
 
-        for(int i = 0; i < numCourses; i++){
-            System.out.println("\n--- Course #" + (i + 1) + " ---");
-            System.out.print("Course Name: ");
-            String courseName = sc.nextLine();
-
+        for (int i = 0; i < numCourses; i++) {
+            sc.nextLine(); // Clear buffer
+            System.out.print("\nCourse Name: ");
+            String name = sc.nextLine();
             System.out.print("Units: ");
-            int courseUnits = sc.nextInt();
+            int units = sc.nextInt();
 
-            Course course = new Course(courseName, courseUnits);
+            Course course = new Course(name, units);
 
-            System.out.print("How many grading categories: ");
-            int numCategory = sc.nextInt();
+            System.out.print("How many categories (e.g., 2 for Midterm & Final): ");
+            int numCats = sc.nextInt();
 
-            for(int j = 0; j < numCategory; j++){
+            for (int j = 0; j < numCats; j++) {
                 sc.nextLine();
-                System.out.print("Category Name (Quiz, Midterm, Prelim, etc..: ");
-                String categoryName = sc.nextLine();
-                System.out.print("Weight: ");
+                System.out.print("Category Name: ");
+                String catName = sc.nextLine();
+                System.out.print("Weight (e.g., 50): ");
                 double weight = sc.nextDouble();
-                System.out.print("Score: ");
+                System.out.print("Score (e.g., 4.5): ");
                 double score = sc.nextDouble();
 
+                // FIXED: Actually adding the category to the list
+                course.addCategory(catName, score, weight);
             }
-            sc.nextLine(); //clear buffer to avoid errors
             courses.add(course);
         }
 
-
-        //Final Calculations
-        double weightedPoints = 0;
+        // Final Summary Logic
+        double totalWeightedPoints = 0;
         int totalUnits = 0;
 
-        System.out.println("\n--- SUMMARY ---");
-        //easier printing
-        for(Course c : courses){
-            double gp = c.getGradePoint();
-            System.out.println(c.name + " | Units: " + c.units + " | Grades: " + gp);
-            weightedPoints += (gp * c.units);
+        System.out.println("\n--- FINAL SUMMARY ---");
+        for (Course c : courses) {
+            double avg = c.calculateAverage();
+            System.out.printf("%s | Units: %d | Grade: %.2f\n", c.name, c.units, avg);
+            totalWeightedPoints += (avg * c.units);
             totalUnits += c.units;
-
         }
 
-        double finalGPA = (totalUnits == 0) ? 0 : (weightedPoints / totalUnits);
-        System.out.println("Final Grade: " + String.format("%.1f", finalGPA));
-
-
+        double finalGWA = (totalUnits == 0) ? 0 : (totalWeightedPoints / totalUnits);
+        System.out.println("----------------------");
+        System.out.printf("TOTAL UNITS: %d\n", totalUnits);
+        System.out.printf("FINAL GWA: %.2f\n", finalGWA);
     }
-
 }
